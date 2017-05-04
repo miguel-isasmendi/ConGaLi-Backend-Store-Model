@@ -1,0 +1,54 @@
+{
+  "version": "0.0.1",
+  "description": "Models MongoDB Backend store service for ConGaLi",
+  "author": "Miguel Darío Isasmendi",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "node --inspect app.js --environment dev",
+    "app": "node app.js",
+    "start": "npm app",
+    "lint_test": "eslint-mocha --eslint-args='--color --ext .js test' --mocha-args='--recursive test'",
+    "lint": "eslint --color --ext .js src config",
+    "check-coverage": "istanbul check-coverage ./coverage/coverage.json",
+    "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- ./test/unit/spec --recursive",
+    "unit": "mocha ./test/unit/spec --recursive"
+  },
+  "devDependencies": {
+    "chai": "3.5.0",
+    "eslint": "3.19.0",
+    "eslint-config-standard": "10.2.1",
+    "eslint-friendly-formatter": "2.0.7",
+    "eslint-mocha": "0.2.2",
+    "eslint-plugin-standard": "3.0.1",
+    "istanbul": "0.4.5",
+    "mocha": "3.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miguel-isasmendi/ConGaLi-Backend-Model-Store.git"
+  },
+  "keywords": [
+    "MongoDB",
+    "game",
+    "node.js",
+    "Restify",
+    "REST"
+  ],
+  "bugs": {
+    "url": "https://github.com/miguel-isasmendi/ConGaLi-Backend-Model-Store/issues"
+  },
+  "homepage": "https://github.com/miguel-isasmendi/ConGaLi-Backend-Model-Store#readme",
+  "dependencies": {
+    "commander": "2.9.0",
+    "log4js": "1.1.1",
+    "moment": "2.18.1",
+    "mongoose": "4.9.7",
+    "node-mongoose-validator": "1.2.0",
+    "restify": "4.3.0",
+    "uuid": "3.0.1"
+  },
+  "engines": {
+    "node": ">= 7.0.0"
+  }
+}
