@@ -1,4 +1,4 @@
-module.exports = function (connection, mongoose, mongoBuildArguments) {
+module.exports = function (connection, mongoose, globalModelContainer) {
   let CellsTemplateDefinitionSchema = new mongoose.Schema( {
     name: { type: String, required: true, unique: true },
     imgSrc: { type: String, required: true },
@@ -18,5 +18,5 @@ module.exports = function (connection, mongoose, mongoBuildArguments) {
     }
   }
 
-  mongoBuildArguments.CellsTemplateDefinition = connection.model('CellsTemplateDefinition', CellsTemplateDefinitionSchema)
+  globalModelContainer.CellsTemplateDefinition = connection.model('CellsTemplateDefinition', CellsTemplateDefinitionSchema)
 }

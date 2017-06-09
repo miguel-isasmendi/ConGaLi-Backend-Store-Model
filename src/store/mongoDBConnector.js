@@ -20,13 +20,14 @@ function constructDB ( mongoConfig, modelCreationFunction ) {
 
   logger.debug(`Creating connection to ${dbUri}`)
   let connection = mongoose.createConnection(dbUri)
-  let db = connection.db
+  let connectionData = { db: connection.db, connection: connection }
   
   // When successfully connected
   connection.on( 'connected',
     () => {  
       logger.debug( `Mongoose connection open to ${dbUri}`);
-      createModels( connection, mongoConfig.modelsFolderName, modelCreationFunction )
+      createModels( connection, mongoConfig.modelsFolderName, modelCreationFunction, connectionData, globalModelContainer )
+      connectionData.models = globalModelContainer
     }
   )
 
@@ -45,7 +46,7 @@ function constructDB ( mongoConfig, modelCreationFunction ) {
     })
   })
 
-  return { db: db, connection: connection }
+  return connectionData
 }
 
 /*
@@ -69,7 +70,7 @@ function objectIdWithTimestamp (timestamp) {
   return constructedObjectId
 }
 
-function createModels (connection, modelsFolderName, modelCreationFunction) {
+function createModels (connection, modelsFolderName, modelCreationFunction, connectionData, globalModelContainer) {
 
   let normalizedPath = path.join(__dirname, modelsFolderName)
 
@@ -82,7 +83,7 @@ function createModels (connection, modelsFolderName, modelCreationFunction) {
 
   logger.debug('Creating DB models...')
 
-  modelCreationFunction(connection, mongoose, normalizedPath)
+  modelCreationFunction(connection, mongoose, normalizedPath, globalModelContainer)
 
   logger.debug('Done!')
 }
@@ -108,7 +109,7 @@ function createDirectoryPath (aPath) {
   }
 }
 
-module.exports = function ( aConfig, aModelCreationFunction) {
+module.exports = (aConfig, aModelCreationFunction) => {
   
   createDirectoryPath(`./data/${aConfig.dbName}`)
   createDirectoryPath(`./log/${aConfig.dbName}`)

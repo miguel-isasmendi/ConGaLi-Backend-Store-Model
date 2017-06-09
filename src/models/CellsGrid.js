@@ -1,4 +1,4 @@
-module.exports = function (connection, mongoose, mongoBuildArguments) {
+module.exports = function (connection, mongoose, globalModelContainer) {
   let CellsGridSchema = new mongoose.Schema( {
     name: { type: String, required: true, unique: true },
     maxWidth: { type: Number, min: 10, max: 999999, required: true },
@@ -16,5 +16,5 @@ module.exports = function (connection, mongoose, mongoBuildArguments) {
     }
   }
 
-  mongoBuildArguments.CellsGrid = connection.model('CellsGrid', CellsGridSchema)
+  globalModelContainer.CellsGrid = connection.model('CellsGrid', CellsGridSchema)
 }

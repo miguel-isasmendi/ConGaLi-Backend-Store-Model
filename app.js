@@ -6,7 +6,7 @@ let programArgs = require('commander')
 
 programArgs
   .version('0.0.1')
-  .option('-e, --environment [String]', 'Environment option ["dev", "prod"]("prod" is the default and fallback configuration)')
+  .option('-e, --environment [String]', 'Environment option ['dev', 'prod']('prod' is the default and fallback configuration)')
   .parse(processModule.argv)
 
 let configFileName = ''
@@ -29,16 +29,22 @@ logger.info(JSON.stringify(config))
 logger.info('Starting App...')
 
 let allowCrossDomain = (req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
-  next();
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header('Access-Control-Allow-Headers', 'X-Requested-With')
+  next()
 }
 
 const server = restify.createServer()
 
 server.use(allowCrossDomain)
 
-require('./src/models/init')(config.mongoConfig)
+server.use((req, res, next) => {
+  res.contentType = 'application/json'
+  next()
+})
+
+require('./src/dao/init')(config.mongoConfig)
+require('./src/resource/init')(config, server)
 
 server.listen(
     config.port,

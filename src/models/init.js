@@ -3,16 +3,16 @@ const moment = require ('moment')
 const path = require('path')
 const logger = require('log4js').getLogger('Models Initializator')
 
-function createModels ( connection, mongoose, normalizedPath ) {
+function createModels ( connection, mongoose, normalizedPath, globalModelContainer ) {
   logger.debug(`Creating Models...`)
 
-  let mongoBuildArguments = {}
-  require(path.join(normalizedPath, 'CellsGrid'))(connection, mongoose, mongoBuildArguments)
-  logger.debug(`Models created so far: ${JSON.stringify(mongoBuildArguments)}`)
+  let globalModelContainer = {}
+  require(path.join(normalizedPath, 'CellsGrid'))(connection, mongoose, globalModelContainer)
+  logger.debug(`Models created so far: ${JSON.stringify(globalModelContainer)}`)
 
-  require(path.join(normalizedPath, 'CellsTemplateDefinition'))(connection, mongoose, mongoBuildArguments)
-  require(path.join(normalizedPath, 'ConwaysGame'))(connection, mongoose, mongoBuildArguments)
-  require(path.join(normalizedPath, 'TemplateGroup'))(connection, mongoose, mongoBuildArguments)
+  require(path.join(normalizedPath, 'CellsTemplateDefinition'))(connection, mongoose, globalModelContainer)
+  require(path.join(normalizedPath, 'ConwaysGame'))(connection, mongoose, globalModelContainer)
+  require(path.join(normalizedPath, 'TemplateGroup'))(connection, mongoose, globalModelContainer)
 }
 
-module.exports = aConfig => require('../store/mongoDBConnector')(aConfig, createModels)
+module.exports = createModels

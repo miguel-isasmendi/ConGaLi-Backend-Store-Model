@@ -1,11 +1,11 @@
-module.exports = function (connection, mongoose, mongoBuildArguments) {
+module.exports = function (connection, mongoose, globalModelContainer) {
   let ConwaysGameSchema = new mongoose.Schema( {
     ownerId: { type: String, required: true, unique: true },
     name: { type: String, required: true },
     refreshInterval: { type: Number, min: 10, max: 9999999 },
     users: [mongoose.Schema.Types.Mixed],
-    cellsGrids: [mongoBuildArguments.CellsGrid.schema],
-    presetConfigurations: [mongoBuildArguments.CellsTemplateDefinition.schema]
+    cellsGrids: [globalModelContainer.CellsGrid.schema],
+    presetConfigurations: [globalModelContainer.CellsTemplateDefinition.schema]
   })
 
   ConwaysGameSchema.methods.buildPublicJSON = function (minimalisticExport) {
@@ -19,5 +19,5 @@ module.exports = function (connection, mongoose, mongoBuildArguments) {
     }
   }
 
-  mongoBuildArguments.ConwaysGame = connection.model('ConwaysGame', ConwaysGameSchema)
+  globalModelContainer.ConwaysGame = connection.model('ConwaysGame', ConwaysGameSchema)
 }
