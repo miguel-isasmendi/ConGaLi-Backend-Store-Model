@@ -6,7 +6,7 @@ let programArgs = require('commander')
 
 programArgs
   .version('0.0.1')
-  .option('-e, --environment [String]', 'Environment option ['dev', 'prod']('prod' is the default and fallback configuration)')
+  .option('-e, --environment [String]', 'Environment option ["dev", "prod"]("prod" is the default and fallback configuration)')
   .parse(processModule.argv)
 
 let configFileName = ''

@@ -26,6 +26,7 @@ function constructDB ( mongoConfig, modelCreationFunction ) {
   connection.on( 'connected',
     () => {  
       logger.debug( `Mongoose connection open to ${dbUri}`);
+      let globalModelContainer = {}
       createModels( connection, mongoConfig.modelsFolderName, modelCreationFunction, connectionData, globalModelContainer )
       connectionData.models = globalModelContainer
     }

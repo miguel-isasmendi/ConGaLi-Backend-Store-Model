@@ -6,7 +6,6 @@ const logger = require('log4js').getLogger('Models Initializator')
 function createModels ( connection, mongoose, normalizedPath, globalModelContainer ) {
   logger.debug(`Creating Models...`)
 
-  let globalModelContainer = {}
   require(path.join(normalizedPath, 'CellsGrid'))(connection, mongoose, globalModelContainer)
   logger.debug(`Models created so far: ${JSON.stringify(globalModelContainer)}`)
 
