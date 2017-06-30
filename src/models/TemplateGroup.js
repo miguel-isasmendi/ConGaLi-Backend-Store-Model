@@ -1,5 +1,5 @@
-module.exports = function (connection, mongoose, globalModelContainer) {
-  let TemplateGroupSchema = new mongoose.Schema( {
+module.exports = (connection, mongoose, globalModelContainer) => {
+  let TemplateGroupSchema = new mongoose.Schema({
     name: { type: String, required: true, unique: true },
     templates: [globalModelContainer.CellsTemplateDefinition.schema],
     inactiveSince: { type: Date }
@@ -14,4 +14,3 @@ module.exports = function (connection, mongoose, globalModelContainer) {
 
   globalModelContainer.TemplateGroup = connection.model('TemplateGroup', TemplateGroupSchema)
 }
-

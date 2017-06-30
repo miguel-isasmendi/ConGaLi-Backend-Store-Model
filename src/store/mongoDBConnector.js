@@ -1,50 +1,57 @@
-/** 
+/**
  * Module responsible for the persistence layer of the microservice.
  */
 const logger = require('log4js').getLogger('MongoDB Connector')
-const fs = require( 'fs' )
-const path = require( 'path' )
-const moment = require( 'moment' )
+const fs = require('fs')
+const path = require('path')
+const moment = require('moment')
 
-/* Special vars*/
-const mongoose = require( 'mongoose' )
+/* Special vars */
+const mongoose = require('mongoose')
 const ObjectId = mongoose.Types.ObjectId
 
 mongoose.Promise = global.Promise
 
 /* Functions */
 
-function constructDB ( mongoConfig, modelCreationFunction ) {
-
+function constructDB (mongoConfig, modelCreationFunction, aDAOCreationFunction, aCallback) {
   let dbUri = `mongodb://${mongoConfig.host}/${mongoConfig.dbName}`
 
   logger.debug(`Creating connection to ${dbUri}`)
   let connection = mongoose.createConnection(dbUri)
   let connectionData = { db: connection.db, connection: connection }
-  
+
   // When successfully connected
-  connection.on( 'connected',
-    () => {  
-      logger.debug( `Mongoose connection open to ${dbUri}`);
+  connection.on('connected',
+    () => {
+      logger.debug(`Mongoose connection open to ${dbUri}`)
       let globalModelContainer = {}
-      createModels( connection, mongoConfig.modelsFolderName, modelCreationFunction, connectionData, globalModelContainer )
+      createModels(connection, mongoConfig.modelsFolderName, modelCreationFunction, connectionData, globalModelContainer)
       connectionData.models = globalModelContainer
+
+      let daoMap = aDAOCreationFunction.call(aDAOCreationFunction, connectionData)
+
+      aCallback.call(aCallback, null, daoMap)
     }
   )
 
   // If the connection throws an error
-  connection.on( 'error', err => logger.debug(`Mongoose connection error: ${err}`))
+  connection.on('error', err => {
+    logger.debug(`Mongoose connection error: ${err}`)
+    aCallback(err)
+  })
 
   // When the connection is disconnected
-  connection.on( 'disconnected', () => logger.debug('Mongoose disconnected'))
+  connection.on('disconnected', () => logger.debug('Mongoose disconnected'))
 
-  // If the Node process ends, close the Mongoose connection 
-  process.on('SIGINT', () => {  
+  // If the Node process ends, close the Mongoose connection
+  process.on('SIGINT', () => {
     connection.close(
-      () => { 
-        logger.debug('Mongoose disconnected through app termination') 
-        process.exit(0) 
-    })
+      () => {
+        logger.debug('Mongoose disconnected through app termination')
+        process.exit(0)
+      }
+    )
   })
 
   return connectionData
@@ -56,15 +63,15 @@ function constructDB ( mongoConfig, modelCreationFunction ) {
 */
 function objectIdWithTimestamp (timestamp) {
   // Convert string date to Date object (otherwise assume timestamp is a date)
-  if ( typeof( timestamp ) == 'string' )
-    timestamp = moment.utc( timestamp );
+  if ((typeof timestamp) === 'string') {
+    timestamp = moment.utc(timestamp)
+  }
 
   // Convert date object to hex seconds since Unix epoch
   let hexSeconds = Math.floor(timestamp / 1000).toString(16)
 
   // Create an ObjectId with that hex timestamp
-
-  let constructedObjectId = new ObjectId( hexSeconds + '0000000000000000' )
+  let constructedObjectId = new ObjectId(hexSeconds + '0000000000000000')
 
   logger.debug(`Returning a new ObjectId('${constructedObjectId}') with Timestamp: ${constructedObjectId.getTimestamp().toISOString()}`)
 
@@ -72,14 +79,13 @@ function objectIdWithTimestamp (timestamp) {
 }
 
 function createModels (connection, modelsFolderName, modelCreationFunction, connectionData, globalModelContainer) {
-
-  let normalizedPath = path.join(__dirname, modelsFolderName)
+  let normalizedPath = path.join(__dirname, '..', modelsFolderName)
 
   try {
-    fs.accessSync( normalizedPath, fs.W_OK )
-  } catch ( error ) {
+    fs.accessSync(normalizedPath, fs.W_OK)
+  } catch (error) {
     logger.info(`Models directory doesn't exist, creating: ${normalizedPath}`)
-    fs.mkdirSync(normalizedPath, 0744)
+    fs.mkdirSync(normalizedPath, 744)
   }
 
   logger.debug('Creating DB models...')
@@ -102,20 +108,19 @@ function createDirectoryPath (aPath) {
     accumulativePath = path.join(i === 0 ? './' : '', accumulativePath, pathElements[i])
 
     try {
-      fs.accessSync(accumulativePath, fs.W_OK);
+      fs.accessSync(accumulativePath, fs.W_OK)
     } catch (e) {
       logger.info(`Directory doesn't extist, creating: ${accumulativePath}`)
-      fs.mkdirSync(accumulativePath, 0744)
-    }    
+      fs.mkdirSync(accumulativePath, 744)
+    }
   }
 }
 
-module.exports = (aConfig, aModelCreationFunction) => {
-  
+module.exports = (aConfig, aModelCreationFunction, aDAOCreationFunction, aCallback) => {
   createDirectoryPath(`./data/${aConfig.dbName}`)
   createDirectoryPath(`./log/${aConfig.dbName}`)
 
-  let returnedExports = constructDB( aConfig, aModelCreationFunction )
+  let returnedExports = constructDB(aConfig, aModelCreationFunction, aDAOCreationFunction, aCallback)
 
   returnedExports.ObjectId = ObjectId
   returnedExports.objectIdWithTimestamp = objectIdWithTimestamp

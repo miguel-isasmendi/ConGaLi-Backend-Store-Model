@@ -1,50 +1,67 @@
 const logger = require('log4js').getLogger('Game resources initializator')
+const path = require('path')
 
-function updateGame (req, res, next) {
-  res.send(200)
+class ConwaysGameResourceProvider {
+  constructor (aDAOsMap) {
+    this.gameDAO = aDAOsMap.ConwaysGameDAO
+  }
 
-  return next()
+  updateGame (req, res, next) {
+    res.send(200)
+
+    return next()
+  }
+
+  createGame (req, res, next) {
+    res.setHeader('location', path.join(req.path(), 'newResourceId'))
+    res.send(201, {data: req.body})
+
+    return next()
+  }
+
+  getGames (req, res, next) {
+    this.gameDAO.getAllConwaysGames(
+      {},
+      (err, data) => {
+        res.send(err ? 500 : 200, {data: data})
+        next()
+      }
+    )
+  }
+
+  getGame (req, res, next) {
+    this.gameDAO.getAllConwaysGames(
+      {id: req.params.gameId},
+      (err, data) => {
+        res.send(err ? 500 : 200, {data: data})
+        next()
+      }
+    )
+  }
+
+  createCommand (req, res, next) {
+    res.send(201)
+
+    return next()
+  }
+
+  getCommands (req, res, next) {
+    res.send(200, {data: {id: req.params.gameId}})
+
+    return next()
+  }
 }
 
-function createGame (req, res, next) {
-  // TODO set Location to new resource
-  // res.setHeader('location', resourcePath)
-  res.send(201)
+module.exports = (aConfig, aServer, aDAOsMap) => {
+  logger.debug('Adding Conway\'s Game handlers...')
+  let resourceProvider = new ConwaysGameResourceProvider(aDAOsMap)
 
-  return next()
-}
+  aServer.get('/game', (req, res, next) => resourceProvider.getGames(req, res, next))
+  aServer.put('/game', resourceProvider.createGame)
+  aServer.get('/game/:gameId', resourceProvider.getGame)
+  aServer.post('/game/:gameId', resourceProvider.getGame)
+  aServer.put('/game/:gameId/command', resourceProvider.createCommand)
+  aServer.get('/game/:gameId/command', resourceProvider.getCommands)
 
-function getGames (req, res, next) {
-  res.send(200, {data: [{id:'asd', asdf:'asdf'}]})
-
-  return next()
-}
-
-function getGame (req, res, next) {
-  res.send(200, {data: {id:'asd', asdf:'asdf'}})
-
-  return next()
-}
-
-function createCommand (req, res, next) {
-  res.send(201)
-
-  return next()
-}
-
-function getCommands (req, res, next) {
-  res.send(200, {data: {id: 'asdf'}})
-
-  return next()
-}
-
-module.exports = (aConfig, aServer) => {
-  logger.debug('Adding handlers...')
-
-  aServer.get('/game', getGames)
-  aServer.put('/game', createGame)
-  aServer.get('/game/{id}', getGame)
-  aServer.post('/game/{id}', getGame)
-  aServer.put('/game/{id}/command', createCommand)
-  aServer.get('/game/{id}/command', getCommands)
+  logger.debug('Done adding Conway\'s Game handlers...')
 }

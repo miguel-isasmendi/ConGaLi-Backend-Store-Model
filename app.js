@@ -1,6 +1,8 @@
+const logger = require('log4js').getLogger('Main App')
+
 const restify = require('restify')
 const processModule = require('process')
-const logger = require('log4js').getLogger('Main App')
+const bodyParser = require('body-parser')
 
 let programArgs = require('commander')
 
@@ -43,8 +45,20 @@ server.use((req, res, next) => {
   next()
 })
 
-require('./src/dao/init')(config.mongoConfig)
-require('./src/resource/init')(config, server)
+// parse application/x-www-form-urlencoded
+ server.use(bodyParser.urlencoded({ extended: false }))
+// parse application/json
+server.use(bodyParser.json())
+
+require('./src/dao/init')(
+  config.mongoConfig,
+  server,
+  (err, daoMap) => {
+    if (!err) {
+      require('./src/resource/init')(config, server, daoMap)
+      logger.info('Done starting server, waiting for some action :)')
+    }
+  })
 
 server.listen(
     config.port,

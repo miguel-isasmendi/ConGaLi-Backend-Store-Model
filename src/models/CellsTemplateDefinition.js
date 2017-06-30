@@ -1,5 +1,5 @@
-module.exports = function (connection, mongoose, globalModelContainer) {
-  let CellsTemplateDefinitionSchema = new mongoose.Schema( {
+module.exports = (connection, mongoose, globalModelContainer) => {
+  let CellsTemplateDefinitionSchema = new mongoose.Schema({
     name: { type: String, required: true, unique: true },
     imgSrc: { type: String, required: true },
     attribution: { type: String },

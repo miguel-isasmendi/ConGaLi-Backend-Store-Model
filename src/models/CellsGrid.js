@@ -1,12 +1,12 @@
-module.exports = function (connection, mongoose, globalModelContainer) {
-  let CellsGridSchema = new mongoose.Schema( {
+module.exports = (connection, mongoose, globalModelContainer) => {
+  let CellsGridSchema = new mongoose.Schema({
     name: { type: String, required: true, unique: true },
     maxWidth: { type: Number, min: 10, max: 999999, required: true },
     maxHeight: { type: Number, min: 10, max: 999999, required: true },
-    resolution: { type: Number, min: 10, max: 999999,default: 10, required: true }
+    resolution: { type: Number, min: 10, max: 999999, default: 10, required: true }
   })
 
-  EvseSchema.methods.buildPublicJSON = function (minimalisticExport) {
+  CellsGridSchema.methods.buildPublicJSON = function (minimalisticExport) {
     return {
       name: this.name,
       maxWidth: this.maxWidth,
