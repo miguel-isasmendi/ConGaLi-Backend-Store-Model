@@ -3,30 +3,44 @@ const logger = require('log4js').getLogger('Cached Data DAO')
 class ConwaysGameDAO {
   constructor (dbConnectorData) {
     this.dbConnectorData = dbConnectorData
-    this.ConwaysGame = this.dbConnectorData.models['ConwaysGame']
+    this.ConwaysGame = this.dbConnectorData.models.ConwaysGame
   }
 
-  removeConwaysGame (searchConfig, callback) {
+  createGame (gameData, callback) {
+    let usersData = {}
+    usersData[gameData.user.id] = {color: gameData.user.color}
+
+    let newGame = new this.ConwaysGame({
+      ownerId: Object.keys(usersData)[0],
+      name: gameData.name,
+      refreshInterval: gameData.refreshInterval,
+      users: usersData
+    })
+
+    newGame.save(callback)
+  }
+
+  removeGame (searchConfig, callback) {
     this.ConwaysGame.findOneAndRemove({'id': searchConfig.id}, callback)
   }
 
-  updateConwaysGame (searchConfig, data, callback) {
+  updateGame (searchConfig, data, callback) {
     this.ConwaysGame
       .findOneAndUpdate(
-        {id: data.id},
+        {_id: data.id},
         data,
         callback
       )
   }
 
-  getConwaysGame (searchConfig, callback) {
+  getGame (searchConfig, callback) {
     this.ConwaysGame.findOne(
-      {'id': searchConfig.id},
+      {_id: searchConfig.id},
       callback
     )
   }
 
-  getAllConwaysGames (searchConfig, callback) {
+  getAllGames (searchConfig, callback) {
     this.ConwaysGame.find({}, callback)
   }
 }

@@ -13,27 +13,37 @@ class ConwaysGameResourceProvider {
   }
 
   createGame (req, res, next) {
-    res.setHeader('location', path.join(req.path(), 'newResourceId'))
-    res.send(201, {data: req.body})
+    this.gameDAO.createGame(
+      req.body,
+      (err, newGame) => {
 
-    return next()
+        if (!err) {
+          res.setHeader('location', path.join(req.path(), newGame._id.toString()))
+          res.send(201, {data: newGame.buildPublicJSON()})
+        } else {
+          res.send(500)
+        }
+
+        next()
+      }
+    )
   }
 
   getGames (req, res, next) {
-    this.gameDAO.getAllConwaysGames(
+    this.gameDAO.getAllGames(
       {},
-      (err, data) => {
-        res.send(err ? 500 : 200, {data: data})
+      (err, games) => {
+        res.send(err ? 500 : 200, {data: games.map(game => game.buildPublicJSON())})
         next()
       }
     )
   }
 
   getGame (req, res, next) {
-    this.gameDAO.getAllConwaysGames(
+    this.gameDAO.getGame(
       {id: req.params.gameId},
-      (err, data) => {
-        res.send(err ? 500 : 200, {data: data})
+      (err, game) => {
+        res.send(err ? 500 : 200, {data: game.buildPublicJSON()})
         next()
       }
     )
@@ -57,8 +67,8 @@ module.exports = (aConfig, aServer, aDAOsMap) => {
   let resourceProvider = new ConwaysGameResourceProvider(aDAOsMap)
 
   aServer.get('/game', (req, res, next) => resourceProvider.getGames(req, res, next))
-  aServer.put('/game', resourceProvider.createGame)
-  aServer.get('/game/:gameId', resourceProvider.getGame)
+  aServer.put('/game', (req, res, next) => resourceProvider.createGame(req, res, next))
+  aServer.get('/game/:gameId', (req, res, next) => resourceProvider.getGame(req, res, next))
   aServer.post('/game/:gameId', resourceProvider.getGame)
   aServer.put('/game/:gameId/command', resourceProvider.createCommand)
   aServer.get('/game/:gameId/command', resourceProvider.getCommands)

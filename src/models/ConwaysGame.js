@@ -10,6 +10,7 @@ module.exports = (connection, mongoose, globalModelContainer) => {
 
   ConwaysGameSchema.methods.buildPublicJSON = function (minimalisticExport) {
     return {
+      id: this._id,
       name: this.name,
       ownerId: this.ownerId,
       refreshInterval: this.refreshInterval,
