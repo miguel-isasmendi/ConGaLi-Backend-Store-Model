@@ -1,4 +1,4 @@
-const logger = require('log4js').getLogger('Cached Data DAO')
+const logger = require('log4js').getLogger('CellsTemplate DAO')
 
 class ConwaysGameDAO {
   constructor (dbConnectorData) {

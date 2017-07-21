@@ -1,8 +1,7 @@
 module.exports = (connection, mongoose, globalModelContainer) => {
   let TemplateGroupSchema = new mongoose.Schema({
     name: { type: String, required: true, unique: true },
-    templates: [globalModelContainer.CellsTemplateDefinition.schema],
-    inactiveSince: { type: Date }
+    templates: [globalModelContainer.CellsTemplateDefinition.schema]
   })
 
   TemplateGroupSchema.methods.buildPublicJSON = function (minimalisticExport) {

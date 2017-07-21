@@ -5,7 +5,7 @@ module.exports = (connection, mongoose, globalModelContainer) => {
     attribution: { type: String },
     details: { type: String },
     points: [mongoose.Schema.Types.Mixed],
-    inactiveSince: { type: Date }
+    inactiveSince: {type: Date, default: new Date()}
   })
 
   CellsTemplateDefinitionSchema.methods.buildPublicJSON = function (minimalisticExport) {

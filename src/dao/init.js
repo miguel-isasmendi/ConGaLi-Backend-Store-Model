@@ -11,6 +11,8 @@ module.exports = (aConfig, server, callback) => {
       logger.debug(`Creating DAOs`)
 
       require('./ConwaysGameDAO')(dbConnectorData, aDAOsMap)
+      require('./CellsTemplatesDAO')(dbConnectorData, aDAOsMap)
+      require('./GameCommandsDAO')(dbConnectorData, aDAOsMap)
 
       logger.debug(`DAOs created: ${Object.keys(aDAOsMap)}`)
 

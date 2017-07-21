@@ -8,7 +8,10 @@ function createModels (connection, mongoose, normalizedPath, globalModelContaine
   require(path.join(normalizedPath, 'CellsGrid'))(connection, mongoose, globalModelContainer)
   require(path.join(normalizedPath, 'CellsTemplateDefinition'))(connection, mongoose, globalModelContainer)
   require(path.join(normalizedPath, 'ConwaysGame'))(connection, mongoose, globalModelContainer)
+
   require(path.join(normalizedPath, 'TemplateGroup'))(connection, mongoose, globalModelContainer)
+
+  require(path.join(normalizedPath, 'GameCommand'))(connection, mongoose, globalModelContainer)
 
   logger.debug(`Models created so far: ${Object.keys(globalModelContainer)}`)
 }

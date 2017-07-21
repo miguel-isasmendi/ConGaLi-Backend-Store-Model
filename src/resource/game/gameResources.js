@@ -16,7 +16,6 @@ class ConwaysGameResourceProvider {
     this.gameDAO.createGame(
       req.body,
       (err, newGame) => {
-
         if (!err) {
           res.setHeader('location', path.join(req.path(), newGame._id.toString()))
           res.send(201, {data: newGame.buildPublicJSON()})
@@ -48,18 +47,6 @@ class ConwaysGameResourceProvider {
       }
     )
   }
-
-  createCommand (req, res, next) {
-    res.send(201)
-
-    return next()
-  }
-
-  getCommands (req, res, next) {
-    res.send(200, {data: {id: req.params.gameId}})
-
-    return next()
-  }
 }
 
 module.exports = (aConfig, aServer, aDAOsMap) => {
@@ -69,9 +56,7 @@ module.exports = (aConfig, aServer, aDAOsMap) => {
   aServer.get('/game', (req, res, next) => resourceProvider.getGames(req, res, next))
   aServer.put('/game', (req, res, next) => resourceProvider.createGame(req, res, next))
   aServer.get('/game/:gameId', (req, res, next) => resourceProvider.getGame(req, res, next))
-  aServer.post('/game/:gameId', resourceProvider.getGame)
-  aServer.put('/game/:gameId/command', resourceProvider.createCommand)
-  aServer.get('/game/:gameId/command', resourceProvider.getCommands)
+  aServer.post('/game/:gameId', (req, res, next) => resourceProvider.updateGame(req, res, next))
 
   logger.debug('Done adding Conway\'s Game handlers...')
 }
